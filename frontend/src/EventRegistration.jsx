@@ -41,17 +41,40 @@ export default function EventRegistration() {
 
   const onSubmit = async (data) => {
     try {
+        let paymentId = null;
+
+        // 1. Process Payment if event is paid
+        if (selectedEvent && selectedEvent.isPaid) {
+            const paymentData = {
+                userEmail: data.userEmail,
+                amount: selectedEvent.eventFee,
+                type: 'event',
+                eventId: selectedEvent._id,
+                clubId: selectedEvent.clubId,
+                status: 'completed' // Mocking successful payment
+            };
+            const paymentResponse = await axiosInstance.post('/payments', paymentData);
+            if (paymentResponse.data.insertedId) {
+                paymentId = paymentResponse.data.insertedId;
+            } else {
+                throw new Error("Payment failed");
+            }
+        }
+
+        // 2. Register for Event
         const registrationData = {
             ...data,
             status: 'registered',
+            paymentId: paymentId,
             registeredAt: new Date(),
         };
 
         const response = await axiosInstance.post('/event-registrations', registrationData);
         if (response.data.acknowledged) {
-            alert(selectedEvent?.isPaid ? 'Proceeding to payment...' : 'Registered for event successfully!');
+            alert(selectedEvent?.isPaid ? 'Payment successful! Registered for event.' : 'Registered for event successfully!');
             reset();
             setSelectedEvent(null);
+            setValue('clubId', ''); // Clear club ID
         }
     } catch (error) {
         console.error("Error registering for event:", error);

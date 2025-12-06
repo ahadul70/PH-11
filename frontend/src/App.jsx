@@ -3,6 +3,7 @@ import './App.css'
 import ClubCreate from './clubCreate'
 import EventCreate from './EventCreate'
 import EventRegistration from './EventRegistration'
+import ClubJoin from './ClubJoin'
 
 function App() {
  
@@ -14,6 +15,8 @@ function App() {
     <EventCreate/>
     <div className="divider">OR</div>
     <EventRegistration/>
+    <div className="divider">OR</div>
+    <ClubJoin/>
     </>
   )
 }
